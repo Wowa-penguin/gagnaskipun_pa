@@ -1,4 +1,6 @@
 from random import Random
+
+# todo: munda að remova random fyrir skil
 from bucket_sll import Bucket
 from error import NotFoundException
 
@@ -31,9 +33,7 @@ class HashMap:
 
     def contains(self, key):
         array_key = hash(key) % self.array_size
-        if self.array[array_key].contains(key):
-            return True
-        return False
+        return self.array[array_key].contains(key)
 
     def remove(self, key):
         array_key = hash(key) % self.array_size
@@ -70,15 +70,3 @@ class HashMap:
 
 if __name__ == "__main__":
     hash_map = HashMap()
-    hash_map.insert(("Hello", "bæ"), "Hallo sonur")
-    rand = Random()
-    keys = []
-    # for _ in range(50):
-    #     key_test = rand.randint(0, 1248284120841)
-    #     hash_map.insert(key_test, str(rand.randint(0, 199912424)))
-    #     keys.append(key_test)
-    # # print(keys)
-    print(hash_map.find(("Hello", "bæ")))
-
-    # print(hash("Hello"))
-    print("done")

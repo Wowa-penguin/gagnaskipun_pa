@@ -211,6 +211,37 @@ class BSTMap:
 
         return f"{node.key}|{node.data} " + left + right
 
+    def count_odd_elements(self):
+        if self.root is None:
+            return 0
+        else:
+            if self.root.key % 2 != 0:
+                return (
+                    1
+                    + self._count(self.root.left, dir_v="L")
+                    + self._count(self.root.left, dir_v="R")
+                    + self._count(self.root.right, dir_v="L")
+                    + self._count(self.root.right, dir_v="R")
+                )
+            return (
+                self._count(self.root.left, dir_v="L")
+                + self._count(self.root.left, dir_v="R")
+                + self._count(self.root.right, dir_v="L")
+                + self._count(self.root.right, dir_v="R")
+            )
+
+    def _count(self, node, dir_v, count=0):
+        if node.key % 2 != 0:
+            count += 1
+        if node.left and dir_v == "L":
+            return self._count(node.left, "L", count)
+        if node.left is None and dir_v == "L":
+            return count
+        if node.right and dir_v == "R":
+            return self._count(node.right, "R", count)
+        if node.right is None and dir_v == "R":
+            return count
+
 
 class MyComparableKey:
     def __init__(self, int_value, string_value):
@@ -236,4 +267,6 @@ if __name__ == "__main__":
     bst.insert(70, "70")
     bst.insert(60, "60")
     bst.insert(80, "80")
+    bst.insert(81, "81")
     print(bst)
+    print(bst.count_odd_elements())

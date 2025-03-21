@@ -13,23 +13,40 @@ class Key:
         return self.hash()
 
     def hash(self) -> int:
+        int_value = 0
+        key = self.key
         if isinstance(self.key, int):
-            self.key *= 45389085986 / 81938012914 + 43481393021 - 14000494091
-            return int(self.key)
-        elif isinstance(self.key, str):
-            int_value = 0
+            int_value = key * 2654435761
+        if isinstance(self.key, str):
+            for char in key:
+                int_value = (int_value * 31 + ord(char)) % (2**32)
+        if isinstance(self.key, tuple):
             for x in self.key:
-                int_value += (
-                    ord(x) * 45389085986 / 81938012914 + 43481393021 - 14000494091
-                )
-            return int_value
-
-    # todo: laga key alstaðar og ekki nota hash hér heldur í buckti and map
+                if isinstance(x, int):
+                    int_value += x * 2654435761
+                elif isinstance(x, str):
+                    for char in x:
+                        int_value += (int_value * 31 + ord(char)) % (2**32)
+        return int(int_value)
 
 
 if __name__ == "__main__":
     rand = Random()
-    key_test = Key(20, "Hello")
-    key_test_2 = Key(21, "Hello")
-    print(hash(key_test) % 8)
-    print(hash(key_test_2) % 8)
+    key_1 = Key("1", "Hello")
+    key_1_1 = Key("2", "Hello")
+    key_1_2 = Key("3", "Hello")
+    key_1_3 = Key("4", "Hello")
+    key_1_4 = Key("5", "Hello")
+    key_1 = Key("6", "Hello")
+    key_2 = Key("7", "Hello")
+    key_3 = Key((21, 124, 214, 144), "Hello")
+    key_4 = Key(("aouawf", "napifnpiaf", 214, 144), "Hello")
+    key_4 = Key(("234", "napi131", 21241, 3), "Hello")
+    print(hash(key_1) % (8 * 2))
+    print(hash(key_1_1) % (8 * 2))
+    print(hash(key_1_2) % (8 * 2))
+    print(hash(key_1_3) % (8 * 2))
+    print(hash(key_1_4) % (8 * 2))
+    print(hash(key_2) % (8 * 2))
+    print(hash(key_3) % (8 * 2))
+    print(hash(key_4) & (8 * 2))
