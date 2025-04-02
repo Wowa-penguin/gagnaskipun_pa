@@ -9,7 +9,6 @@ class MainGame:
     def __init__(self):
         self.game = Wordle()
         self.word = []
-        self.game_state = True
 
     def add_new_word(self, new_word):
         if len(new_word) != self.game.game_len:
@@ -38,7 +37,7 @@ class MainGame:
                 curr_level[count] = "c"
             count += 1
 
-    def main_game_start(self):
+    def start_game(self):
         valid_start = True
         while valid_start:
             try:
@@ -50,7 +49,8 @@ class MainGame:
                 time.sleep(3)
 
     def main_game_loob(self):
-        self.main_game_start()
+        """The main game loop function which manages the game from start to finish"""
+        self.start_game()
         self.select_random_word()
         self.game.display_game_bord()
         while self.game.curr_level < 6:
@@ -58,31 +58,51 @@ class MainGame:
             try:
                 user_word = self.game.paly_round()
             except WordIsNotRightSizeError:
+                self.game.clear()
                 print(
-                    f"{self.game.bold}{self.game.red}The word is of len {len(self.word)}{self.game.end}"
+                    f"{self.game.bold}{self.game.red}The word is of length {len(self.word)}{self.game.end}"
                 )
-                time.sleep(3)
+                print(
+                    f"{self.game.bold}{self.game.red}Your guess has to be of the sem length{self.game.end}"
+                )
+                time.sleep(4)
+                self.game.clear()
+                self.game.display_game_bord()
                 continue
             self.chack_word(user_word)
             if user_word == self.word:
                 new_word = self.game.display_win(self.word)
                 if new_word is not None:
-                    try:
-                        self.add_new_word(new_word)
-                    except WordIsNotRightSizeError:
-                        print(
-                            f"{self.game.bold}{self.game.red}The word has to be same size aka {self.game.game_len} try one more time{self.game.end}"
-                        )
-                        try_again = input(
-                            f"{self.game.blue}Enter the word of len {self.game.game_len}: {self.game.end}"
-                        )
-                        self.add_new_word(try_again)
-                self.game.display_end(new_word)
+                    while new_word is not None:
+                        try:
+                            self.add_new_word(new_word)
+                            break  # success on adding the word
+                        except WordIsNotRightSizeError:
+                            print(
+                                f"{self.game.bold}{self.game.red}The word has to be the same size ({self.game.game_len}). Try again.{self.game.end}"
+                            )
+                            new_word = input(
+                                f"{self.game.blue}Enter a word of length {self.game.game_len}: {self.game.end}"
+                            )
+                replay = self.game.display_end(new_word)
                 break
             self.game.curr_level += 1
             self.game.display_game_bord()
+        if replay:
+            self.replay_game()
+            return True
+        return False
+
+    def replay_game(self):
+        """After a game has been played and the player wants to play again,
+        this function resets the game"""
+        new_game = Wordle()
+        self.game = new_game
+        self.word = []
 
 
 if __name__ == "__main__":
-    t = MainGame()
-    t.main_game_loob()
+    GAME_LIVE = True
+    game = MainGame()
+    while GAME_LIVE:
+        GAME_LIVE = game.main_game_loob()

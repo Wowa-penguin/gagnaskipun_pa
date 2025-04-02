@@ -3,6 +3,8 @@ from error import WordIsNotRightSizeError, NotValidGameSizeError
 
 
 class UiMain:
+    """Main ui class to add color to the terminal window"""
+
     def __init__(self) -> None:
         self.black = "\033[0;30m"
         self.red = "\033[0;31m"
@@ -31,7 +33,7 @@ class UiMain:
         self.end = "\033[0m"
 
     def clear(self) -> None:
-        """Með þessu er hreinsað skjá"""
+        """To clear the terminal window"""
         if name == "nt":
             system("cls")
         else:
@@ -39,7 +41,10 @@ class UiMain:
 
 
 class Wordle(UiMain):
+    """The ui wordle game class to display the game bord and level"""
+
     def __init__(self):
+        # todo: búa til game_bord gen eftir input frá hvað mörg guess user vil hafa
         self.game_bord = {
             "Level 1": ["?"],
             "Guess 1": ["-"],
@@ -57,7 +62,8 @@ class Wordle(UiMain):
         self.curr_level = 1
         super().__init__()
 
-    def start_game_upp(self):
+    def start_game_upp(self) -> None:
+        """The start up display function"""
         self.clear()
         print(f"{self.blue}{self.bold}Here is wordle{self.end} \n")
         user_name = input(f"{self.bold}Plis enter a username for your self: {self.end}")
@@ -77,39 +83,52 @@ class Wordle(UiMain):
         self.clear()
         return False
 
-    def display_game_bord(self):
+    def display_game_bord(self) -> None:
+        """To display the game bord to the window"""
         self.clear()
         print(f"{self.cyan}User: {self.user_name}{self.end}\n")
         for key, value in self.game_bord.items():
+            # The keys in the bord are str thet start with Level or guess followed by the a number from 1 to 5
+            level_to_stop = key.split(" ")
+            if int(level_to_stop[-1]) > self.curr_level:
+                # To only display the level the game is at and help with time complexity max is O(N X M)
+                break
             level = f"Level {self.curr_level}"
-            if key == level:
+            if key == level:  # if key is level
                 print(f"{self.green}{self.bold}{key}{self.end}", end=" ")
-            else:
+            else:  # if key is Guess
                 print(f"{self.light_gray}{key}{self.end}", end=" ")
-            for x in value:
-                if "Guess" in key:
-                    if x == "-":
-                        print(f"|{self.red} {x} {self.end}|", end=" ")
-                    if x == "C":
-                        print(f"|{self.green} {x} {self.end}|", end=" ")
-                    elif x == "c":
-                        print(f"|{self.yellow} {x} {self.end}|", end=" ")
-                else:
-                    print(f"| {x} |", end=" ")
+            if "Guess" in key:  # Chack if the "Guess" is in the key
+                for x in value:
+                    print(self.format_guess_char(x), end=" ")
+            else:
+                print(f"| {" | | ".join(value)} |", end=" ")
             print("\n")
 
-    def paly_round(self):
+    def format_guess_char(self, x):
+        """To format the colors in the bord"""
+        color = {
+            "-": self.red,
+            "C": self.green,
+            "c": self.yellow,
+        }.get(x, self.end)
+        return f"|{color} {x} {self.end}|"
+
+    def paly_round(self) -> None:
+        """Gets the user input for a word guess and plays one round"""
         print(self.curr_level)
         user_input = input(f"Enter a {self.game_len} letter word: ").replace(" ", "")
         user_word_lis = []
         for x in user_input:
             user_word_lis.append(x)
-        if len(user_word_lis) != self.game_len:
+        if len(user_word_lis) != self.game_len:  # if the guess word is not the sem size
             raise WordIsNotRightSizeError
         self.game_bord[f"Level {self.curr_level}"] = user_word_lis
-        return user_word_lis
+        return user_word_lis  # return the guess
 
-    def display_win(self, corect_word: list):
+    def display_win(self, corect_word: list) -> str | None:
+        """Function to diplay the win window to the user
+        it also asks for a new word returns None if no new word"""
         self.clear()
         print(
             f"{self.cyan}{self.user_name} You win the word was ({"".join(corect_word)}){self.end}"
@@ -122,11 +141,21 @@ class Wordle(UiMain):
             return make_new_word
         return None
 
-    def display_end(self, new_word: str | None):
+    def display_end(self, new_word: str | None) -> str | None:
+        """Function to diplay the end window to the user
+        it gets the new word if it exists otherwise it gets None
+        returns str if user wants to play again"""
         self.clear()
-        if new_word:
+        if new_word:  # if a new word
             print(
-                f"{self.purple}Ty for playing and for the new word of {self.bold}{self.blue}{new_word}{self.end}{self.purple} have a good dag :){self.end}"
+                f"{self.purple}Ty for playing and for the new word of {self.bold}{self.blue}{new_word}{self.end}"
             )
-        else:
-            print(f"{self.purple}Ty for playing have a good dag :){self.end}")
+        else:  # if no new word
+            print(f"{self.purple}Ty for playing{self.end}")
+        ask_for_new_game = input(
+            f"{self.light_green}Do you want to play again? (yes q for no) \n: {self.end}"
+        )
+        if ask_for_new_game.lower() == "q":  # if user doesn't want to play again
+            self.clear()
+            print(f"{self.green}Have a good dag :){self.end}")
+        return ask_for_new_game  # just returns str ass if it doesn't return None then it plays again
