@@ -46,19 +46,20 @@ class Wordle(UiMain):
     def __init__(self):
         # todo: búa til game_bord gen eftir input frá hvað mörg guess user vil hafa
         self.game_bord = {
-            "Level 1": ["?"],
-            "Guess 1": ["-"],
-            "Level 2": ["?"],
-            "Guess 2": ["-"],
-            "Level 3": ["?"],
-            "Guess 3": ["-"],
-            "Level 4": ["?"],
-            "Guess 4": ["-"],
-            "Level 5": ["?"],
-            "Guess 5": ["-"],
+            # "Level 1": ["?"],
+            # "Guess 1": ["-"],
+            # "Level 2": ["?"],
+            # "Guess 2": ["-"],
+            # "Level 3": ["?"],
+            # "Guess 3": ["-"],
+            # "Level 4": ["?"],
+            # "Guess 4": ["-"],
+            # "Level 5": ["?"],
+            # "Guess 5": ["-"],
         }
         self.user_name = ""
         self.game_len = 0
+        self.guesses = 0
         self.curr_level = 1
         super().__init__()
 
@@ -77,11 +78,22 @@ class Wordle(UiMain):
         else:
             self.clear()
             raise NotValidGameSizeError
+        print(f"{self.red}{self.bold}From 1 to 10{self.end}")
+        game_guesses_len = int(
+            input(f"{self.bold}Enter how meny guesses do you want: {self.end}")
+        )
+        self.guesses = game_guesses_len
+        self.make_bord(game_guesses_len)
         self.user_name = user_name
         for value in self.game_bord.values():
             value *= game_word_len
         self.clear()
         return False
+
+    def make_bord(self, length: int) -> None:
+        for x in range(length):
+            self.game_bord[f"Level {x+1}"] = ["?"]
+            self.game_bord[f"Guess {x+1}"] = ["-"]
 
     def display_game_bord(self) -> None:
         """To display the game bord to the window"""
@@ -141,6 +153,21 @@ class Wordle(UiMain):
             return make_new_word
         return None
 
+    def display_loss(self, word) -> None:
+        """Function to diplay the loss window"""
+        self.clear()
+        print(
+            f"{self.purple}Ty for playing better luck next time the word was {self.bold}{self.blue}{word}{self.end}"
+        )
+        ask_for_new_game = input(
+            f"{self.light_green}Do you want to play again? (yes q for no) \n: {self.end}"
+        )
+        if ask_for_new_game.lower() == "q":  # if user doesn't want to play again
+            self.clear()
+            print(f"{self.green}Have a good day :){self.end}")
+            return None
+        return ask_for_new_game  # just returns str ass if it doesn't return None then it plays again
+
     def display_end(self, new_word: str | None) -> str | None:
         """Function to diplay the end window to the user
         it gets the new word if it exists otherwise it gets None
@@ -157,5 +184,6 @@ class Wordle(UiMain):
         )
         if ask_for_new_game.lower() == "q":  # if user doesn't want to play again
             self.clear()
-            print(f"{self.green}Have a good dag :){self.end}")
+            print(f"{self.green}Have a good day :){self.end}")
+            return None
         return ask_for_new_game  # just returns str ass if it doesn't return None then it plays again

@@ -4,3 +4,7 @@ class WordIsNotRightSizeError(Exception):
 
 class NotValidGameSizeError(Exception):
     pass
+
+
+class NotUserFund(Exception):
+    pass

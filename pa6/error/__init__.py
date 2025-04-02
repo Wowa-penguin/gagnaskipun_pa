@@ -1,1 +1,1 @@
-from .error import WordIsNotRightSizeError, NotValidGameSizeError
+from .error import WordIsNotRightSizeError, NotValidGameSizeError, NotUserFund

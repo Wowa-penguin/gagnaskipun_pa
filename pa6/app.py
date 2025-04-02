@@ -1,14 +1,15 @@
 import time
 from random import Random
-from ui import Wordle
-from file_man import FileMan
-from error import WordIsNotRightSizeError, NotValidGameSizeError
+from ui import Wordle, User
+from utils.file_man import FileMan
+from error import WordIsNotRightSizeError, NotValidGameSizeError, NotUserFund
 
 
 class MainGame:
     def __init__(self):
         self.game = Wordle()
         self.word = []
+        self.user: User = None
 
     def add_new_word(self, new_word):
         if len(new_word) != self.game.game_len:
@@ -42,6 +43,7 @@ class MainGame:
         while valid_start:
             try:
                 valid_start = self.game.start_game_upp()
+                self.user = User(self.game.user_name)
             except NotValidGameSizeError:
                 print(
                     f"{self.game.bold}{self.game.red}Not a valid game size bro\n Try again{self.game.end}"
@@ -50,10 +52,11 @@ class MainGame:
 
     def main_game_loob(self):
         """The main game loop function which manages the game from start to finish"""
+        game_won = False
         self.start_game()
         self.select_random_word()
         self.game.display_game_bord()
-        while self.game.curr_level < 6:
+        while self.game.curr_level < self.game.guesses + 1:
             print(self.word)
             try:
                 user_word = self.game.paly_round()
@@ -71,7 +74,9 @@ class MainGame:
                 continue
             self.chack_word(user_word)
             if user_word == self.word:
+                game_won = True
                 new_word = self.game.display_win(self.word)
+
                 if new_word is not None:
                     while new_word is not None:
                         try:
@@ -88,10 +93,31 @@ class MainGame:
                 break
             self.game.curr_level += 1
             self.game.display_game_bord()
+        if not game_won:
+            replay = self.game.display_loss("".join(self.word))
+            self.user.loss += 1
+            self.uppdate_user_info("l")
+        else:
+            self.user.wins += 1
+            self.uppdate_user_info("w")
+
         if replay:
             self.replay_game()
             return True
         return False
+
+    def uppdate_user_info(self, score: str):
+        try:
+            conn = FileMan("user/users.tex")
+            user_info = self.user.get_palyer_info()
+            user_info[1] = self.user.wins
+            user_info[2] = self.user.loss
+            if score == "w":
+                conn.uppdate_win(self.user.name)
+            elif score == "l":
+                conn.uppdate_loss(self.user.name)
+        except NotUserFund:
+            self.user.add_user()
 
     def replay_game(self):
         """After a game has been played and the player wants to play again,
