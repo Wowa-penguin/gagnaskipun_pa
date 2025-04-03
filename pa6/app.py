@@ -12,6 +12,13 @@ class MainGame:
         self.game = Wordle()
         self.word = []
         self.user: User = None
+        self.multiplayer = {
+            1: 100,
+            2: 10,
+            3: 5,
+            4: 2,
+            5: 1,
+        }
 
     def add_new_word(self, new_word) -> None:
         """Add a new word To the word bank by creating a connection with File Manager class"""
@@ -75,8 +82,6 @@ class MainGame:
         self.select_random_word()
         self.game.display_game_bord()
         while self.game.curr_level < self.game.guesses + 1:
-            print(self.word)  #! Delete this
-
             try:  # Try except for getting valid user input
                 user_word = self.game.paly_round()
             except WordIsNotRightSizeError:
@@ -103,19 +108,31 @@ class MainGame:
             self.game.display_game_bord()
         # Check if the game is won
         if not game_won:  # Game lost
-            replay = self.game.display_loss("".join(self.word))
+            if self.user.score > self.user.high_score:
+                replay = self.game.display_loss("".join(self.word), self.user.score)
+                self.uppdate_user_info("l", True)
+            else:
+                replay = self.game.display_loss("".join(self.word))
+                self.uppdate_user_info("l")
+            self.user.score = 0
             self.user.loss += 1
-            self.uppdate_user_info("l")
         else:  # Game won
+            self.user.score += self.game.game_len * self.multiplayer.get(
+                self.game.guesses
+            )
             self.user.wins += 1
-            self.uppdate_user_info("w")
+            if self.user.score > self.user.high_score:
+                self.uppdate_user_info("w", True)
+            else:
+                self.uppdate_user_info("w")
+
         # Check if a replay is true
         if replay:
             self.replay_game()
             return True
         return False
 
-    def uppdate_user_info(self, status: str) -> None:
+    def uppdate_user_info(self, status: str, new_high_score: bool = False) -> None:
         """Update the user win and loss ratio
         Create a connection to the user text file which returns the user data in a list
         The list is formatted from the File Manager class so
@@ -124,11 +141,15 @@ class MainGame:
         try:
             conn = FileMan("user/users.tex")
             user_info = self.user.get_palyer_info()
-            user_info[1] = self.user.wins
-            user_info[2] = self.user.loss
-            if status == "w":
+            user_info["win"] = self.user.wins
+            user_info["loss"] = self.user.loss
+            if status == "w" and new_high_score:
+                conn.update_user_info(self.user.name, "win", self.user.score)
+            else:
                 conn.update_user_info(self.user.name, "win")
-            elif status == "l":
+            if status == "l" and new_high_score:
+                conn.update_user_info(self.user.name, "loss", self.user.score)
+            else:
                 conn.update_user_info(self.user.name, "loss")
         except NoUserFund:  # If user doesn't exist add them to the database base
             self.user.add_user()

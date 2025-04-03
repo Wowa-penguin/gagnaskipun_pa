@@ -30,13 +30,14 @@ class FileMan:
                     "name": user[0],
                     "win": int(user[1]),
                     "loss": int(user[2]),
+                    "high_score": int(user[3]),
                 }
                 ret_lis.append(one_user)
             return ret_lis
 
     def sort_win(self, e):
         """To sort the list of dict"""
-        return e["win"]
+        return e["high_score"]
 
     def reed_top_five_users(self) -> list[dict]:
         """Get the top five users for the scoreboard at the start of the game"""
@@ -49,13 +50,15 @@ class FileMan:
         with open(self.path, "a", encoding="utf-8") as conn:
             conn.write(new_word + "\n")
 
-    def add_user(self, new_user: str, wins: int, loss: int) -> None:
+    def add_user(self, new_user: str, wins: int, loss: int, high_score: int) -> None:
         """Add a user to the user files"""
         with open(self.path, "a", encoding="utf-8") as conn:
-            user = f"{new_user},{wins},{loss}"
+            user = f"{new_user},{wins},{loss},{high_score}"
             conn.write("\n" + user)
 
-    def update_user_info(self, user_name: str, key: str) -> None:
+    def update_user_info(
+        self, user_name: str, key: str, new_high_score: int = None
+    ) -> None:
         """Update the user info by passing through the users and matching the username given
         Intex is given between 1 or 2
         1 is for win 2 is for loss"""
@@ -63,15 +66,20 @@ class FileMan:
         for user in users:
             if user_name == user["name"]:
                 user[key] += 1
+                if new_high_score:
+                    user["high_score"] = new_high_score
+
         formatted_lis = []
+
         for x in users:
             value_str: str = ""
             for k, value in x.items():
-                if k != "loss":
+                if k != "high_score":
                     value_str += str(value) + ","
                 else:
                     value_str += str(value)
             formatted_lis.append(value_str)
+
         with open(self.path, "w", encoding="utf-8") as conn:
             for x in formatted_lis:
                 if x == formatted_lis[-1]:

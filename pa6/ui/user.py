@@ -9,6 +9,7 @@ class User:
         self.name = name
         self.wins = 0
         self.loss = 0
+        self.high_score = 0
         self.score = 0
 
     def get_palyer_info(self):
@@ -18,12 +19,13 @@ class User:
             if self.name == user["name"]:
                 self.wins = user["win"]
                 self.loss = user["loss"]
+                self.high_score = user["high_score"]
                 return user
         raise NoUserFund
 
     def add_user(self) -> None:
         conn = FileMan("user/users.tex")
-        conn.add_user(self.name, self.wins, self.loss)
+        conn.add_user(self.name, self.wins, self.loss, 0)
 
 
 if __name__ == "__main__":

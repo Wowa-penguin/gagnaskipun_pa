@@ -50,6 +50,7 @@ class Wordle(UiMain):
         self.game_len = 0
         self.guesses = 0
         self.curr_level = 1
+        self.multiplayer_table = ["1 = 100x", "2 = 10x", "3 = 5x", "4 = 2x", "5 = 1x"]
         super().__init__()
 
     def selcet_user_at_start(self, users: list[dict]) -> None:
@@ -66,20 +67,26 @@ class Wordle(UiMain):
         self.user = user_obj
         self.clear()
         # Ask the user for how many letters are in the word
-        print(f"{self.red}{self.bold}From 3 to 10{self.end}")
+        print(
+            f"{self.red}{self.bold}From 3 to 10 (each letter is worth one point!){self.end}"
+        )
         self.game_len = int(
             input(f"{self.bold}Enter how meny lettars you want in the word: {self.end}")
         )
+        self.clear()
         if not 2 < self.game_len < 11:
-            self.clear()
             raise NotValidGameSizeError
 
         # Ask the user how many guesses they want
-        print(f"{self.red}{self.bold}From 1 to 10{self.end}")
+        print(f"{self.red}{self.bold}Multiplayer Table{self.end}")
+        print("-" * 17)
+        for x in self.multiplayer_table:
+            print(f"{self.bold}Guess -> {x}{self.end}")
+
         self.guesses = int(
-            input(f"{self.bold}Enter how meny guesses do you want: {self.end}")
+            input(f"\n{self.bold}Enter how meny guesses do you want: {self.end}")
         )
-        if not 1 < self.guesses < 11:
+        if not 0 < self.guesses < 6:
             self.clear()
             raise NotValidGameSizeError
 
@@ -99,7 +106,9 @@ class Wordle(UiMain):
     def display_game_bord(self) -> None:
         """To display the game bord to the window"""
         self.clear()
-        print(f"{self.cyan}User: {self.user.name}{self.end}\n")
+        print(
+            f"{self.cyan}User: {self.user.name} - high_score: {self.user.high_score}{self.end}\n"
+        )
         for key, value in self.game_bord.items():
             # The keys in the bord are str thet start with Level or guess followed by the a number from 1 to 5
             level_to_stop = key.split(" ")
@@ -130,10 +139,14 @@ class Wordle(UiMain):
     def display_score_table(self, users: list[list]) -> None:
         """Display the top five users with the highest win score"""
         print(f"{self.cyan}Top five users!{self.end}")
-        print(f"{self.bold}{'Name':<15}{'Wins':<10}{'Losses':<10}{self.end}")
+        print(
+            f"{self.bold}{'Name':<11}{'H_score':<10}{'Wins':<8}{'Losses':<0}{self.end}"
+        )
         print("-" * 35)
         for user in users:
-            print(f"{user["name"]:<15}{user["win"]:<10}{user["loss"]:<10}")
+            print(
+                f"{user["name"]:<11}{user["high_score"]:<10}{user["win"]:<8}{user["loss"]:<0}"
+            )
         print("")  # add a space at the end
 
     def paly_round(self) -> None:
@@ -163,9 +176,13 @@ class Wordle(UiMain):
             return make_new_word
         return None
 
-    def display_loss(self, word) -> None:
+    def display_loss(self, word: str, new_high_score: int = None) -> str | None:
         """Function to diplay the loss window"""
         self.clear()
+        if new_high_score:
+            print(
+                f"{self.light_red}Congratulations you just beat your high score! Your new score is {new_high_score}{self.end}"
+            )
         print(
             f"{self.purple}Ty for playing better luck next time the word was {self.bold}{self.blue}{word}{self.end}"
         )
