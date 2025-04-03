@@ -1,5 +1,6 @@
 from os import name, system
 from error import WordIsNotRightSizeError, NotValidGameSizeError
+from .user import User
 
 
 class UiMain:
@@ -45,7 +46,7 @@ class Wordle(UiMain):
 
     def __init__(self):
         self.game_bord = {}
-        self.user_name = ""
+        self.user: str | User = None
         self.game_len = 0
         self.guesses = 0
         self.curr_level = 1
@@ -56,13 +57,13 @@ class Wordle(UiMain):
         self.clear()
         print(f"{self.blue}{self.bold}Here is wordle{self.end} \n")
         self.display_score_table(users)
-        self.user_name = input(
-            f"{self.bold}Plis enter a username for your self: {self.end}"
-        )
-        return False  # To break the loop in app.py
+        # Get the username and store it as a string for the time being
+        self.user = input(f"{self.bold}Plis enter a username for your self: {self.end}")
+        return self.user
 
-    def start_game_upp(self) -> None:
+    def start_game_upp(self, user_obj: User) -> None:
         """The start up display function, let's the user set the game length and guesses values"""
+        self.user = user_obj
         self.clear()
         # Ask the user for how many letters are in the word
         print(f"{self.red}{self.bold}From 3 to 10{self.end}")
@@ -87,6 +88,7 @@ class Wordle(UiMain):
         for value in self.game_bord.values():
             value *= self.game_len
         self.clear()
+        return False
 
     def make_bord(self, length: int) -> None:
         """Create the game board with level and guesses in a dictionary"""
@@ -97,7 +99,7 @@ class Wordle(UiMain):
     def display_game_bord(self) -> None:
         """To display the game bord to the window"""
         self.clear()
-        print(f"{self.cyan}User: {self.user_name}{self.end}\n")
+        print(f"{self.cyan}User: {self.user.name}{self.end}\n")
         for key, value in self.game_bord.items():
             # The keys in the bord are str thet start with Level or guess followed by the a number from 1 to 5
             level_to_stop = key.split(" ")
@@ -151,7 +153,7 @@ class Wordle(UiMain):
         it also asks for a new word returns None if no new word"""
         self.clear()
         print(
-            f"{self.cyan}{self.user_name} You win the word was ({"".join(corect_word)}){self.end}"
+            f"{self.cyan}{self.user.name} You win the word was ({"".join(corect_word)}){self.end}"
         )
         make_new_word = input(
             f"{self.yellow}Do you want to add a new word if not type (q): {self.end}"

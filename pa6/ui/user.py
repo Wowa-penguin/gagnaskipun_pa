@@ -15,7 +15,9 @@ class User:
         conn = FileMan("user/users.tex")
         users_lis = conn.reed_users()
         for user in users_lis:
-            if self.name == user[0]:
+            if self.name == user["name"]:
+                self.wins = user["win"]
+                self.loss = user["loss"]
                 return user
         raise NoUserFund
 

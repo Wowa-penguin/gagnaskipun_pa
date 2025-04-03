@@ -15,15 +15,23 @@ class FileMan:
             ret_lis.append(new_word)
         return ret_lis
 
-    def reed_users(self) -> list[list]:
-        """Read the user info and returns the list"""
+    def reed_users(self) -> list[dict]:
+        """Read the user info and returns the list of dicts"""
         with open(self.path, "r", encoding="utf-8") as conn:
-            users = conn.read()
-            users_lis = users.split("\n")
-            ret_lis = []
-            for x in users_lis:
+            values = conn.read()
+            temp_lis = values.split("\n")
+            users = []
+            for x in temp_lis:
                 user = x.split(",")
-                ret_lis.append(user)
+                users.append(user)
+            ret_lis = []
+            for user in users:
+                one_user = {
+                    "name": user[0],
+                    "win": int(user[1]),
+                    "loss": int(user[2]),
+                }
+                ret_lis.append(one_user)
             return ret_lis
 
     def sort_win(self, e):
@@ -33,16 +41,8 @@ class FileMan:
     def reed_top_five_users(self) -> list[dict]:
         """Get the top five users for the scoreboard at the start of the game"""
         users = self.reed_users()
-        users_lis = []
-        for user in users:
-            one_user = {
-                "name": user[0],
-                "win": int(user[1]),
-                "loss": int(user[2]),
-            }
-            users_lis.append(one_user)
-        users_lis.sort(key=self.sort_win, reverse=True)
-        return users_lis[0:5]
+        users.sort(key=self.sort_win, reverse=True)
+        return users[0:5]
 
     def write_file(self, new_word: str) -> None:
         """write to a file in /words"""
@@ -55,22 +55,29 @@ class FileMan:
             user = f"{new_user},{wins},{loss}"
             conn.write("\n" + user)
 
-    def update_user_info(self, user_name: str, index: int) -> None:
+    def update_user_info(self, user_name: str, key: str) -> None:
         """Update the user info by passing through the users and matching the username given
         Intex is given between 1 or 2
         1 is for win 2 is for loss"""
-        users_lis = self.reed_users()
-        for user in users_lis:
-            if user_name in user:
-                user[index] = int(user[index]) + 1
-                user[index] = str(user[index])
-                break
-        with open(self.path, "w", encoding="utf-8") as conn:
-            for x in users_lis:
-                if x == users_lis[-1]:
-                    conn.write(",".join(x))
+        users: list[dict] = self.reed_users()
+        for user in users:
+            if user_name == user["name"]:
+                user[key] += 1
+        formatted_lis = []
+        for x in users:
+            value_str: str = ""
+            for k, value in x.items():
+                if k != "loss":
+                    value_str += str(value) + ","
                 else:
-                    conn.write(",".join(x) + "\n")
+                    value_str += str(value)
+            formatted_lis.append(value_str)
+        with open(self.path, "w", encoding="utf-8") as conn:
+            for x in formatted_lis:
+                if x == formatted_lis[-1]:
+                    conn.write(x)
+                else:
+                    conn.write(x + "\n")
 
 
 if __name__ == "__main__":
