@@ -44,19 +44,7 @@ class Wordle(UiMain):
     """The ui wordle game class to display the game bord and level"""
 
     def __init__(self):
-        # todo: búa til game_bord gen eftir input frá hvað mörg guess user vil hafa
-        self.game_bord = {
-            # "Level 1": ["?"],
-            # "Guess 1": ["-"],
-            # "Level 2": ["?"],
-            # "Guess 2": ["-"],
-            # "Level 3": ["?"],
-            # "Guess 3": ["-"],
-            # "Level 4": ["?"],
-            # "Guess 4": ["-"],
-            # "Level 5": ["?"],
-            # "Guess 5": ["-"],
-        }
+        self.game_bord = {}
         self.user_name = ""
         self.game_len = 0
         self.guesses = 0
@@ -91,6 +79,7 @@ class Wordle(UiMain):
         return False
 
     def make_bord(self, length: int) -> None:
+        """Create the game board with level and guesses in a dictionary"""
         for x in range(length):
             self.game_bord[f"Level {x+1}"] = ["?"]
             self.game_bord[f"Guess {x+1}"] = ["-"]
@@ -118,7 +107,7 @@ class Wordle(UiMain):
             print("\n")
 
     def format_guess_char(self, x):
-        """To format the colors in the bord"""
+        """To format the colors in the bord for guesses"""
         color = {
             "-": self.red,
             "C": self.green,

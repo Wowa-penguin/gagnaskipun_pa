@@ -1,3 +1,6 @@
+"""Error classes for exception handling and raising errors"""
+
+
 class WordIsNotRightSizeError(Exception):
     pass
 
@@ -6,5 +9,5 @@ class NotValidGameSizeError(Exception):
     pass
 
 
-class NotUserFund(Exception):
+class NoUserFund(Exception):
     pass
