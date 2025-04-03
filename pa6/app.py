@@ -51,7 +51,7 @@ class MainGame:
         valid_start = True
         while valid_start:
             try:  # Try Expect for starting up the game with valid settings
-                valid_start = self.game.start_game_upp(conn.reed_top_five_users())
+                valid_start = self.game.selcet_user_at_start(conn.reed_top_five_users())
                 self.user = User(self.game.user_name)  # Create the user class
             except NotValidGameSizeError:
                 print(
@@ -59,10 +59,12 @@ class MainGame:
                 )
                 time.sleep(3)
 
-    def main_game_loob(self) -> None:
+    def main_game_loob(self, is_replay: bool) -> None:
         """The main game loop function which manages the game from start to finish"""
         game_won = False
-        self.start_game()
+        if not is_replay:
+            self.start_game()
+        self.game.start_game_upp()
         self.select_random_word()
         self.game.display_game_bord()
         while self.game.curr_level < self.game.guesses + 1:
@@ -81,7 +83,7 @@ class MainGame:
                 time.sleep(4)  # Gives the user time to read the message
                 self.game.clear()
                 self.game.display_game_bord()
-                continue  # back to the loop
+                continue  # back to the top loop
 
             self.chack_word(user_word)
             if user_word == self.word:
@@ -106,7 +108,7 @@ class MainGame:
             return True
         return False
 
-    def uppdate_user_info(self, score: str) -> None:
+    def uppdate_user_info(self, status: str) -> None:
         """Update the user win and loss ratio
         Create a connection to the user text file which returns the user data in a list
         The list is formatted from the File Manager class so
@@ -117,9 +119,9 @@ class MainGame:
             user_info = self.user.get_palyer_info()
             user_info[1] = self.user.wins
             user_info[2] = self.user.loss
-            if score == "w":
+            if status == "w":
                 conn.update_user_info(self.user.name, 1)  # index 1 for win
-            elif score == "l":
+            elif status == "l":
                 conn.update_user_info(self.user.name, 2)  # index 2 for loss
         except NoUserFund:  # If user doesn't exist add them to the database base
             self.user.add_user()
@@ -151,6 +153,8 @@ class MainGame:
 
 if __name__ == "__main__":
     GAME_LIVE = True
+    REPALY_ON = False
     game = MainGame()
     while GAME_LIVE:
-        GAME_LIVE = game.main_game_loob()
+        GAME_LIVE = game.main_game_loob(REPALY_ON)
+        REPALY_ON = True

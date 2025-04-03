@@ -51,33 +51,42 @@ class Wordle(UiMain):
         self.curr_level = 1
         super().__init__()
 
-    def start_game_upp(self, users: list[dict]) -> None:
-        """The start up display function"""
+    def selcet_user_at_start(self, users: list[dict]) -> None:
+        """Displaced the score table with the top five users and lets the user select a username"""
         self.clear()
         print(f"{self.blue}{self.bold}Here is wordle{self.end} \n")
         self.display_score_table(users)
-        user_name = input(f"{self.bold}Plis enter a username for your self: {self.end}")
+        self.user_name = input(
+            f"{self.bold}Plis enter a username for your self: {self.end}"
+        )
+        return False  # To break the loop in app.py
+
+    def start_game_upp(self) -> None:
+        """The start up display function, let's the user set the game length and guesses values"""
         self.clear()
+        # Ask the user for how many letters are in the word
         print(f"{self.red}{self.bold}From 3 to 10{self.end}")
-        game_word_len = int(
+        self.game_len = int(
             input(f"{self.bold}Enter how meny lettars you want in the word: {self.end}")
         )
-        if 2 < game_word_len < 11:
-            self.game_len = game_word_len
-        else:
+        if not 2 < self.game_len < 11:
             self.clear()
             raise NotValidGameSizeError
+
+        # Ask the user how many guesses they want
         print(f"{self.red}{self.bold}From 1 to 10{self.end}")
-        game_guesses_len = int(
+        self.guesses = int(
             input(f"{self.bold}Enter how meny guesses do you want: {self.end}")
         )
-        self.guesses = game_guesses_len
-        self.make_bord(game_guesses_len)
-        self.user_name = user_name
+        if not 1 < self.guesses < 11:
+            self.clear()
+            raise NotValidGameSizeError
+
+        # Create the game board dict
+        self.make_bord(self.guesses)
         for value in self.game_bord.values():
-            value *= game_word_len
+            value *= self.game_len
         self.clear()
-        return False
 
     def make_bord(self, length: int) -> None:
         """Create the game board with level and guesses in a dictionary"""

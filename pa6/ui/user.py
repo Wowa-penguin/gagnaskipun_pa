@@ -9,9 +9,9 @@ class User:
         self.name = name
         self.wins = 0
         self.loss = 0
+        self.score = 0
 
     def get_palyer_info(self):
-        """"""
         conn = FileMan("user/users.tex")
         users_lis = conn.reed_users()
         for user in users_lis:

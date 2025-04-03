@@ -55,36 +55,6 @@ class FileMan:
             user = f"{new_user},{wins},{loss}"
             conn.write("\n" + user)
 
-    def update_win(self, user_name) -> None:
-        """Update the win for a user"""
-        users_lis = self.reed_users()
-        for user in users_lis:
-            if user_name in user:
-                user[1] = int(user[1]) + 1
-                user[1] = str(user[1])
-                break
-        with open(self.path, "w", encoding="utf-8") as conn:
-            for x in users_lis:
-                if x == users_lis[-1]:
-                    conn.write(",".join(x))
-                else:
-                    conn.write(",".join(x) + "\n")
-
-    def update_loss(self, user_name) -> None:
-        """Update the loss for a user"""
-        users_lis = self.reed_users()
-        for user in users_lis:
-            if user_name in user:
-                user[2] = int(user[2]) + 1
-                user[2] = str(user[2])
-                break
-        with open(self.path, "w", encoding="utf-8") as conn:
-            for x in users_lis:
-                if x == users_lis[-1]:
-                    conn.write(",".join(x))
-                else:
-                    conn.write(",".join(x) + "\n")
-
     def update_user_info(self, user_name: str, index: int) -> None:
         """Update the user info by passing through the users and matching the username given
         Intex is given between 1 or 2
