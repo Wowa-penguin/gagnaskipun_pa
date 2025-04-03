@@ -47,10 +47,11 @@ class MainGame:
     def start_game(self) -> None:
         """Start the game option select for game size and guesses
         Create the user class to keep track of wins and loss"""
+        conn = FileMan("user/users.tex")
         valid_start = True
         while valid_start:
             try:  # Try Expect for starting up the game with valid settings
-                valid_start = self.game.start_game_upp()
+                valid_start = self.game.start_game_upp(conn.reed_top_five_users())
                 self.user = User(self.game.user_name)  # Create the user class
             except NotValidGameSizeError:
                 print(

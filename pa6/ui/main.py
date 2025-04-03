@@ -51,10 +51,11 @@ class Wordle(UiMain):
         self.curr_level = 1
         super().__init__()
 
-    def start_game_upp(self) -> None:
+    def start_game_upp(self, users: list[dict]) -> None:
         """The start up display function"""
         self.clear()
         print(f"{self.blue}{self.bold}Here is wordle{self.end} \n")
+        self.display_score_table(users)
         user_name = input(f"{self.bold}Plis enter a username for your self: {self.end}")
         self.clear()
         print(f"{self.red}{self.bold}From 3 to 10{self.end}")
@@ -114,6 +115,15 @@ class Wordle(UiMain):
             "c": self.yellow,
         }.get(x, self.end)
         return f"|{color} {x} {self.end}|"
+
+    def display_score_table(self, users: list[list]) -> None:
+        """Display the top five users with the highest win score"""
+        print(f"{self.cyan}Top five users!{self.end}")
+        print(f"{self.bold}{'Name':<15}{'Wins':<10}{'Losses':<10}{self.end}")
+        print("-" * 35)
+        for user in users:
+            print(f"{user["name"]:<15}{user["win"]:<10}{user["loss"]:<10}")
+        print("")  # add a space at the end
 
     def paly_round(self) -> None:
         """Gets the user input for a word guess and plays one round"""

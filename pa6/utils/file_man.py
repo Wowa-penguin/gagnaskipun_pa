@@ -26,6 +26,24 @@ class FileMan:
                 ret_lis.append(user)
             return ret_lis
 
+    def sort_win(self, e):
+        """To sort the list of dict"""
+        return e["win"]
+
+    def reed_top_five_users(self) -> list[dict]:
+        """Get the top five users for the scoreboard at the start of the game"""
+        users = self.reed_users()
+        users_lis = []
+        for user in users:
+            one_user = {
+                "name": user[0],
+                "win": int(user[1]),
+                "loss": int(user[2]),
+            }
+            users_lis.append(one_user)
+        users_lis.sort(key=self.sort_win, reverse=True)
+        return users_lis[0:5]
+
     def write_file(self, new_word: str) -> None:
         """write to a file in /words"""
         with open(self.path, "a", encoding="utf-8") as conn:
