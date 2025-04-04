@@ -151,7 +151,6 @@ class Wordle(UiMain):
 
     def paly_round(self) -> None:
         """Gets the user input for a word guess and plays one round"""
-        print(self.curr_level)
         user_input = input(f"Enter a {self.game_len} letter word: ").replace(" ", "")
         user_word_lis = []
         for x in user_input:
