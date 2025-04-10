@@ -75,17 +75,6 @@ class LinkedList:
             node = node.next
         return ret_str
 
-        # ret_str = ""
-        # tmp_node = self.head
-        # try:
-        #     while tmp_node.next is not None:
-        #         ret_str += f"{tmp_node.data} "
-        #         tmp_node = tmp_node.next
-        #     ret_str += f"{tmp_node.data} "
-        #     return ret_str
-        # except AttributeError:
-        #     return ret_str
-
 
 if __name__ == "__main__":
     lis = LinkedList()

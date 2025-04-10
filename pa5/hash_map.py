@@ -1,6 +1,3 @@
-from random import Random
-
-# todo: munda að remova random fyrir skil
 from bucket_sll import Bucket
 from error import NotFoundException
 
